@@ -40,7 +40,17 @@ const ToolsTab = ({
 }) => {
   const [params, setParams] = useState<Record<string, unknown>>({});
   useEffect(() => {
-    setParams({});
+    if (selectedTool) {
+      const newParams: Record<string, unknown> = {};
+      for (const key of Object.keys(selectedTool.inputSchema.properties ?? {})) {
+        if (params.hasOwnProperty(key)) {
+          newParams[key] = params[key];
+        }
+      }
+      setParams(newParams);
+    } else {
+      setParams({});
+    }
   }, [selectedTool]);
 
   const renderToolResult = () => {
@@ -228,6 +238,7 @@ const ToolsTab = ({
                           type={prop.type === "number" ? "number" : "text"}
                           id={key}
                           name={key}
+                          value={params[key] !== undefined ? String(params[key]) : ""}
                           placeholder={prop.description}
                           onChange={(e) =>
                             setParams({
